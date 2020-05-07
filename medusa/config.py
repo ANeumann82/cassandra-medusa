@@ -18,6 +18,7 @@ import configparser
 import logging
 import os
 import pathlib
+import socket
 import sys
 
 import medusa.storage
@@ -27,14 +28,15 @@ StorageConfig = collections.namedtuple(
     'StorageConfig',
     ['bucket_name', 'key_file', 'prefix', 'fqdn', 'host_file_separator', 'storage_provider',
      'base_path', 'max_backup_age', 'max_backup_count', 'api_profile', 'transfer_max_bandwidth',
-     'concurrent_transfers', 'multi_part_upload_threshold', 'host', 'port', 'secure']
+     'concurrent_transfers', 'multi_part_upload_threshold', 'host', 'port', 'secure', 'aws_cli_path']
 )
 
 CassandraConfig = collections.namedtuple(
     'CassandraConfig',
     ['start_cmd', 'stop_cmd', 'config_file', 'cql_username', 'cql_password', 'check_running', 'is_ccm',
      'sstableloader_bin', 'nodetool_username', 'nodetool_password', 'nodetool_password_file_path', 'nodetool_host',
-     'nodetool_port']
+     'nodetool_port', 'certfile', 'usercert', 'userkey', 'sstableloader_ts', 'sstableloader_tspw',
+     'sstableloader_ks', 'sstableloader_kspw']
 )
 
 SSHConfig = collections.namedtuple(
@@ -79,6 +81,8 @@ def load_config(args, config_file):
         'concurrent_transfers': 1,
         'multi_part_upload_threshold': 100 * 1024 * 1024,
         'secure': True,
+        'aws_cli_path': 'aws',
+        'fqdn': socket.getfqdn(),
     }
 
     config['logging'] = {

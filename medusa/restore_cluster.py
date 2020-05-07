@@ -131,8 +131,7 @@ class RestoreJob(object):
             logging.info('Restore will happen "In-Place", no new hardware is involved')
             self.in_place = True
             self.session_provider = CqlSessionProvider([self.seed_target],
-                                                       username=self.config.cassandra.cql_username,
-                                                       password=self.config.cassandra.cql_password)
+                                                       self.config.cassandra)
 
             with self.session_provider.new_session() as session:
                 self._populate_ringmap(self.cluster_backup.tokenmap, session.tokenmap())
@@ -142,8 +141,8 @@ class RestoreJob(object):
             logging.info('Restore will happen on new hardware')
             self.in_place = False
             self._populate_hostmap()
+            logging.info('Starting Restore on all the nodes in this list: {}'.format(self.host_list))
 
-        logging.info('Starting Restore on all the nodes in this list: {}'.format(self.host_list))
         self._restore_data()
 
     def _pssh_run(self, hosts, command, hosts_variables=None):
